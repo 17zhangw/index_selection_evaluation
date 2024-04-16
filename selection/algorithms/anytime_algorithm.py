@@ -87,6 +87,9 @@ class AnytimeAlgorithm(SelectionAlgorithm):
             )
             if best_configuration[0] is None or costs < best_configuration[1]:
                 best_configuration = (indexes, costs)
+                logging.info(
+                    f"AnytimeDTA found new best: {list(indexes)}"
+                )
 
             current_time = time.time()
             consumed_time = current_time - start_time

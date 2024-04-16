@@ -23,7 +23,7 @@ class PostgresDatabaseConnector(DatabaseConnector):
     def create_connection(self):
         if self._connection:
             self.close()
-        self._connection = psycopg2.connect("dbname={}".format(self.db_name))
+        self._connection = psycopg2.connect("host=localhost dbname={}".format(self.db_name))
         self._connection.autocommit = self.autocommit
         self._cursor = self._connection.cursor()
 
@@ -138,6 +138,8 @@ class PostgresDatabaseConnector(DatabaseConnector):
         index.estimated_size = size * 8 * 1024
 
     def drop_indexes(self):
+        return
+
         logging.info("Dropping indexes")
         stmt = "select indexname from pg_indexes where schemaname='public'"
         indexes = self.exec_fetch(stmt, one=False)
@@ -149,6 +151,8 @@ class PostgresDatabaseConnector(DatabaseConnector):
 
     # PostgreSQL expects the timeout in milliseconds
     def exec_query(self, query, timeout=None, cost_evaluation=False):
+        assert False
+
         # Committing to not lose indexes after timeout
         if not cost_evaluation:
             self._connection.commit()
