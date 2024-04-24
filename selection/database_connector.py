@@ -48,6 +48,8 @@ class DatabaseConnector:
                     self.exec_only(query_statement)
                 except Exception as e:
                     logging.error(e)
+            elif "set" in query_statement.lower():
+                self.exec_only(query_statement)
             elif "select" in query_statement or "SELECT" in query_statement:
                 return query_statement
 

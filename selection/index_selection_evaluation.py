@@ -48,7 +48,6 @@ class IndexSelection:
 
     def run(self):
         """This is called when running `python3 -m selection`."""
-        logging.getLogger().setLevel(logging.DEBUG)
         config_file = self._parse_command_line_args()
         if not config_file:
             config_file = self.default_config_file

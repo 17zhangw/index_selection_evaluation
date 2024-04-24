@@ -15,6 +15,7 @@ class PostgresDatabaseConnector(DatabaseConnector):
         if not self.db_name:
             self.db_name = "postgres"
         self.create_connection()
+        self.enable_simulation()
 
         self.set_random_seed()
 
@@ -23,12 +24,12 @@ class PostgresDatabaseConnector(DatabaseConnector):
     def create_connection(self):
         if self._connection:
             self.close()
-        self._connection = psycopg2.connect("host=localhost dbname={}".format(self.db_name))
+        self._connection = psycopg2.connect("host=localhost port=5492 dbname={}".format(self.db_name))
         self._connection.autocommit = self.autocommit
         self._cursor = self._connection.cursor()
 
     def enable_simulation(self):
-        self.exec_only("create extension hypopg")
+        self.exec_only("create extension if not exists hypopg")
         self.commit()
 
     def database_names(self):
@@ -93,6 +94,8 @@ class PostgresDatabaseConnector(DatabaseConnector):
         logging.info(f"Database {database_name} dropped")
 
     def create_statistics(self):
+        return
+
         logging.info("Postgres: Run `analyze`")
         self.commit()
         self._connection.autocommit = True
@@ -100,6 +103,8 @@ class PostgresDatabaseConnector(DatabaseConnector):
         self._connection.autocommit = self.autocommit
 
     def set_random_seed(self, value=0.17):
+        return
+
         logging.info(f"Postgres: Set random seed `SELECT setseed({value})`")
         self.exec_only(f"SELECT setseed({value})")
 
