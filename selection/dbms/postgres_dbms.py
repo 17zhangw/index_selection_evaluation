@@ -30,6 +30,7 @@ class PostgresDatabaseConnector(DatabaseConnector):
 
     def enable_simulation(self):
         self.exec_only("create extension if not exists hypopg")
+        self.exec_only("set hypopg.use_real_oids = on")
         self.commit()
 
     def database_names(self):

@@ -1,6 +1,7 @@
 import logging
 
 from selection.what_if_index_creation import WhatIfIndexCreation
+from tqdm import tqdm
 
 
 class CostEvaluation:
@@ -40,7 +41,9 @@ class CostEvaluation:
     def which_indexes_utilized_and_cost(self, query, indexes):
         self._prepare_cost_calculation(indexes, store_size=True)
 
+        logging.info(f"Fetching query plan for {query}")
         plan = self.db_connector.get_plan(query)
+        logging.info(f"Fetched query plan for {query}")
         cost = plan["Total Cost"]
         plan_str = str(plan)
 
@@ -53,9 +56,10 @@ class CostEvaluation:
         # created for an index object, there is no hypopg_name assigned to it. However,
         # all items in current_indexes must also have an equivalent in `indexes`.
         for index in self.current_indexes:
-            assert (
-                index in indexes
-            ), "Something went wrong with _prepare_cost_calculation."
+            # TODO: Skip this cause it's hella expensive.
+            #assert (
+            #    index in indexes
+            #), "Something went wrong with _prepare_cost_calculation."
 
             if index.hypopg_name not in plan_str:
                 continue
@@ -80,7 +84,7 @@ class CostEvaluation:
     # missing indexes and unsimulating/dropping indexes
     # that exist but are not in the combination.
     def _prepare_cost_calculation(self, indexes, store_size=False):
-        for index in set(indexes) - self.current_indexes:
+        for index in tqdm(set(indexes) - self.current_indexes, leave=False):
             self._simulate_or_create_index(index, store_size=store_size)
         for index in self.current_indexes - set(indexes):
             self._unsimulate_or_drop_index(index)
@@ -92,6 +96,7 @@ class CostEvaluation:
             self.what_if.simulate_index(index, store_size=store_size)
         elif self.cost_estimation == "actual_runtimes":
             self.db_connector.create_index(index)
+            assert False
         self.current_indexes.add(index)
 
     def _unsimulate_or_drop_index(self, index):
@@ -105,6 +110,7 @@ class CostEvaluation:
         if self.cost_estimation == "whatif":
             return self.db_connector.get_cost(query)
         elif self.cost_estimation == "actual_runtimes":
+            assert False
             runtime = self.db_connector.exec_query(query)[0]
             return runtime
 

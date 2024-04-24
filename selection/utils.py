@@ -1,3 +1,4 @@
+import logging
 from selection.workload import Workload
 
 
@@ -37,6 +38,7 @@ def get_utilized_indexes(
     utilized_indexes_workload = set()
     query_details = {}
     for query, indexes in zip(workload.queries, indexes_per_query):
+        logging.info(f"Getting utilized indexes for {query} amongst {len(indexes)}")
         (
             utilized_indexes_query,
             cost_with_indexes,
