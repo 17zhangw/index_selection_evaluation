@@ -63,11 +63,12 @@ class IndexSelection:
         if WorkloadParser.is_custom_workload(config["benchmark_name"]):
             # use a custom workload on existing an existing database
             self.database_name = config["database_name"]
+            self.port = config["database_port"]
             workload_parser = WorkloadParser(
-                self.database_system, self.database_name, config["benchmark_name"]
+                self.port, self.database_system, self.database_name, config["benchmark_name"]
             )
             self.workload = workload_parser.execute()
-            self.setup_db_connector(self.database_name, self.database_system)
+            self.setup_db_connector(self.port, self.database_name, self.database_system)
 
         else:
             # use an integrated benchmark with data and query generation
@@ -167,7 +168,7 @@ class IndexSelection:
     def _run_algorithm(self, config):
         self.db_connector.drop_indexes()
         self.db_connector.commit()
-        self.setup_db_connector(self.database_name, self.database_system)
+        self.setup_db_connector(self.port, self.database_name, self.database_system)
 
         algorithm = self.create_algorithm_object(config["name"], config["parameters"])
         logging.info(f"Running algorithm {config}")
@@ -203,8 +204,8 @@ class IndexSelection:
             if ".json" in argument:
                 return argument
 
-    def setup_db_connector(self, database_name, database_system):
+    def setup_db_connector(self, port, database_name, database_system):
         if self.db_connector:
             logging.info("Create new database connector (closing old)")
             self.db_connector.close()
-        self.db_connector = DBMSYSTEMS[database_system](database_name)
+        self.db_connector = DBMSYSTEMS[database_system](port, database_name)

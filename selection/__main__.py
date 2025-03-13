@@ -7,7 +7,7 @@ logging.basicConfig(
     format=BASIC_FORMAT,
     level=logging.DEBUG,
     handlers=[
-        logging.FileHandler("output.log"),
+        #logging.FileHandler("output.log"),
         logging.StreamHandler(),
     ],
 )

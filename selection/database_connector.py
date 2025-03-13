@@ -54,8 +54,8 @@ class DatabaseConnector:
                 return query_statement
             elif "delete" in query_statement.lower():
                 return query_statement
-            elif "set" in query_statement.lower():
-                self.exec_only(query_statement)
+            #elif "set" in query_statement.lower():
+            #    self.exec_only(query_statement)
             elif "select" in query_statement or "SELECT" in query_statement:
                 return query_statement
 
