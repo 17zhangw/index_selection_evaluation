@@ -45,6 +45,7 @@ class IndexSelection:
         self.disable_output_files = False
         self.database_name = None
         self.database_system = None
+        self.algo_indexes = {}
 
     def run(self):
         """This is called when running `python3 -m selection`."""
@@ -121,7 +122,7 @@ class IndexSelection:
                 algorithm_config_unfolded["parameters"]["benchmark_name"] = config[
                     "benchmark_name"
                 ]
-                indexes, what_if, cost_requests, cache_hits = self._run_algorithm(
+                indexes, what_if, cost_requests, cache_hits, algo_bests = self._run_algorithm(
                     algorithm_config_unfolded
                 )
                 calculation_time = round(time.time() - start_time, 2)
@@ -138,6 +139,9 @@ class IndexSelection:
                     what_if,
                 )
                 benchmark.benchmark()
+
+                if algo_bests is not None:
+                    self.algo_indexes[algorithm_config["name"]] = algo_bests
 
     # Parameter list example: {"max_indexes": [5, 10, 20]}
     # Creates config for each value
@@ -184,7 +188,7 @@ class IndexSelection:
         cache_hits = (
             0 if config["name"] == "db2advis" else algorithm.cost_evaluation.cache_hits
         )
-        return indexes, what_if, cost_requests, cache_hits
+        return indexes, what_if, cost_requests, cache_hits, algorithm.bests if hasattr(algorithm, "bests") else None
 
     def create_algorithm_object(self, algorithm_name, parameters):
         algorithm = ALGORITHMS[algorithm_name](self.db_connector, parameters)

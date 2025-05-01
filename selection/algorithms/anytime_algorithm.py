@@ -40,6 +40,7 @@ class AnytimeAlgorithm(SelectionAlgorithm):
         self.disk_constraint = mb_to_b(self.parameters["budget_MB"])
         self.max_index_width = self.parameters["max_index_width"]
         self.max_runtime_minutes = self.parameters["max_runtime_minutes"]
+        self.bests = []
 
     def _calculate_best_indexes(self, workload):
         logging.info("Calculating best indexes Anytime")
@@ -87,6 +88,7 @@ class AnytimeAlgorithm(SelectionAlgorithm):
             )
             if best_configuration[0] is None or costs < best_configuration[1]:
                 best_configuration = (indexes, costs)
+                self.bests.append((indexes, costs))
                 logging.info(
                     f"AnytimeDTA found new best: {list(indexes)}"
                 )
