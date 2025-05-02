@@ -88,7 +88,10 @@ class AnytimeAlgorithm(SelectionAlgorithm):
             )
             if best_configuration[0] is None or costs < best_configuration[1]:
                 best_configuration = (indexes, costs)
-                self.bests.append((indexes, costs))
+                self.bests.append([
+                    f"CREATE INDEX {idx.index_idx()} ON {idx.table()} ({idx.joined_column_names()})"
+                    for idx in indexes
+                ])
                 logging.info(
                     f"AnytimeDTA found new best: {list(indexes)}"
                 )
