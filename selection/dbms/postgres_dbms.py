@@ -1,7 +1,7 @@
 import logging
 import re
 
-import psycopg2
+import psycopg
 
 from selection.database_connector import DatabaseConnector
 
@@ -25,7 +25,7 @@ class PostgresDatabaseConnector(DatabaseConnector):
     def create_connection(self):
         if self._connection:
             self.close()
-        self._connection = psycopg2.connect("host=localhost port={} dbname={}".format(self.port, self.db_name))
+        self._connection = psycopg.connect("host=localhost port={} dbname={}".format(self.port, self.db_name))
         self._connection.autocommit = self.autocommit
         self._cursor = self._connection.cursor()
 
