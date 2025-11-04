@@ -20,9 +20,12 @@ class WorkloadParser:
         else:
             return False
 
-    def get_tables(self):
+    def get_tables(self, db_connector=None):
         assert self.database_system == "postgres"
-        db_connector = PostgresDatabaseConnector(self.port, self.database_name)
+        created = False
+        if not db_connector:
+            db_connector = PostgresDatabaseConnector(self.port, self.database_name)
+            created = True
         result = db_connector.exec_fetchall(
             "SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname='public';"
         )
@@ -43,6 +46,9 @@ class WorkloadParser:
                 table.add_column(Column(column_name))
 
             tables[table_name] = table
+
+        if created:
+            db_connector.close()
 
         return tables
 

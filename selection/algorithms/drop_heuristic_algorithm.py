@@ -21,8 +21,8 @@ class DropHeuristicAlgorithm(SelectionAlgorithm):
         assert (
             self.parameters["max_indexes"] > 0
         ), "Calling the DropHeuristic with max_indexes < 1 does not make sense."
-        logging.info("Calculating best indexes (drop heuristic)")
-        logging.info("Parameters: " + str(self.parameters))
+        logging.getLogger("dta").info("Calculating best indexes (drop heuristic)")
+        logging.getLogger("dta").info("Parameters: " + str(self.parameters))
 
         # remaining_indexes is initialized as set of all potential indexes
         remaining_indexes = set(workload.potential_indexes())
@@ -38,7 +38,7 @@ class DropHeuristicAlgorithm(SelectionAlgorithm):
                 if not lowest_cost or cost < lowest_cost:
                     lowest_cost, index_to_drop = cost, index
             remaining_indexes.remove(index_to_drop)
-            logging.info(
+            logging.getLogger("dta").info(
                 (
                     f"Dropping Index: {index_to_drop}. "
                     f"{len(remaining_indexes)} indexes remaining."

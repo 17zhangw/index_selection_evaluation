@@ -35,8 +35,8 @@ class AutoAdminAlgorithm(SelectionAlgorithm):
         self.max_index_width = self.parameters["max_index_width"]
 
     def _calculate_best_indexes(self, workload):
-        logging.info("Calculating best indexes AutoAdmin")
-        logging.info("Parameters: " + str(self.parameters))
+        logging.getLogger("dta").info("Calculating best indexes AutoAdmin")
+        logging.getLogger("dta").info("Parameters: " + str(self.parameters))
 
         if self.max_indexes == 0:
             return []
@@ -59,13 +59,13 @@ class AutoAdminAlgorithm(SelectionAlgorithm):
         candidates = set()
 
         for query in workload.queries:
-            logging.debug(f"Find candidates for query\t{query}...")
+            logging.getLogger("dta").debug(f"Find candidates for query\t{query}...")
             # Create a workload consisting of one query
             query_workload = Workload([query])
             indexes = self._potential_indexes_for_query(query, potential_indexes)
             candidates |= self.enumerate_combinations(query_workload, indexes)
 
-        logging.info(
+        logging.getLogger("dta").info(
             f"Number of candidates: {len(candidates)}\n" f"Candidates: {candidates}"
         )
         return candidates
@@ -84,7 +84,7 @@ class AutoAdminAlgorithm(SelectionAlgorithm):
             f"\tNumber of candidate indexes: {len(candidate_indexes)}\n"
             f"\tNumber of indexes to be selected: {self.max_indexes}"
         )
-        logging.debug(log_out)
+        logging.getLogger("dta").debug(log_out)
 
         number_indexes_naive = min(self.max_indexes_naive, len(candidate_indexes))
         current_indexes, costs = self.enumerate_naive(
@@ -95,7 +95,7 @@ class AutoAdminAlgorithm(SelectionAlgorithm):
             f"lowest cost (naive): {costs}\n"
             f"\tlowest cost indexes (naive): {current_indexes}"
         )
-        logging.debug(log_out)
+        logging.getLogger("dta").debug(log_out)
 
         number_indexes = min(self.max_indexes, len(candidate_indexes))
         indexes, costs = self.enumerate_greedy(
@@ -111,7 +111,7 @@ class AutoAdminAlgorithm(SelectionAlgorithm):
             f"\tlowest cost indexes (greedy): {indexes}\n"
             f"(greedy): number indexes {len(indexes)}\n"
         )
-        logging.debug(log_out)
+        logging.getLogger("dta").debug(log_out)
 
         return set(indexes)
 
@@ -147,7 +147,7 @@ class AutoAdminAlgorithm(SelectionAlgorithm):
         # (index, cost)
         best_index = (None, None)
 
-        logging.debug(f"Searching in {len(candidate_indexes)} indexes")
+        logging.getLogger("dta").debug(f"Searching in {len(candidate_indexes)} indexes")
 
         for index in candidate_indexes:
             cost = self._simulate_and_evaluate_cost(workload, current_indexes | {index})
@@ -158,7 +158,7 @@ class AutoAdminAlgorithm(SelectionAlgorithm):
             candidate_indexes.remove(best_index[0])
             current_costs = best_index[1]
 
-            logging.debug(f"Additional best index found: {best_index}")
+            logging.getLogger("dta").debug(f"Additional best index found: {best_index}")
 
             return self.enumerate_greedy(
                 workload,

@@ -6,7 +6,7 @@ class DatabaseConnector:
     def __init__(self, db_name, autocommit=False):
         self.db_name = db_name
         self.autocommit = autocommit
-        logging.debug("Database connector created: {}".format(db_name))
+        logging.getLogger("dta").debug("Database connector created: {}".format(db_name))
 
         # This does not reflect the number of unique simulated indexes but
         # the number of simulate_index calls
@@ -32,7 +32,7 @@ class DatabaseConnector:
 
     def close(self):
         self._connection.close()
-        logging.debug("Database connector closed: {}".format(self.db_name))
+        logging.getLogger("dta").debug("Database connector closed: {}".format(self.db_name))
 
     def rollback(self):
         self._connection.rollback()

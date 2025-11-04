@@ -46,7 +46,7 @@ class ExtendAlgorithmAnytime(SelectionAlgorithm):
         current_time = time.time()
         consumed_time = current_time - self.start_time
         if consumed_time > self.max_runtime_minutes * 60:
-            logging.debug(
+            logging.getLogger("dta").debug(
                 f"Stopping because of timing constraints. "
                 f"Time: {consumed_time / 60:.2f} minutes."
             )
@@ -56,7 +56,7 @@ class ExtendAlgorithmAnytime(SelectionAlgorithm):
         return False
 
     def _calculate_best_indexes(self, workload):
-        logging.info("Calculating best indexes Extend")
+        logging.getLogger("dta").info("Calculating best indexes Extend")
 
         self.start_time = time.time()
 
@@ -105,7 +105,7 @@ class ExtendAlgorithmAnytime(SelectionAlgorithm):
             index_combination_size = sum(
                 index.estimated_size for index in index_combination
             )
-            logging.debug(
+            logging.getLogger("dta").debug(
                 "Add index. Current cost savings: "
                 f"{(1 - best['cost'] / current_cost) * 100:.3f}, "
                 f"initial {(1 - best['cost'] / self.initial_cost) * 100:.3f}. "
@@ -167,7 +167,7 @@ class ExtendAlgorithmAnytime(SelectionAlgorithm):
         total_size = sum(index.estimated_size for index in index_combination)
 
         if ratio > best["benefit_to_size_ratio"] and total_size <= self.budget:
-            logging.debug(
+            logging.getLogger("dta").debug(
                 f"new best cost and size: {cost}\t" f"{b_to_mb(total_size):.2f}MB"
             )
             best["combination"] = index_combination

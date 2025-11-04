@@ -14,7 +14,7 @@ class ExampleAlgorithm(SelectionAlgorithm):
         self.example_parameter = self.parameters["example_parameter"]
 
     def _calculate_best_indexes(self, workload):
-        logging.info("Start example index selection algorithm")
+        logging.getLogger("dta").info("Start example index selection algorithm")
         columns = workload.indexable_columns()
         indexes = []
         for i in range(self.example_parameter):

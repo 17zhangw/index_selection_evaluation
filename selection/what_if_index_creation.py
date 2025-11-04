@@ -7,7 +7,7 @@ import logging
 # Uses hypopg for postgreSQL
 class WhatIfIndexCreation:
     def __init__(self, db_connector):
-        logging.debug("Init WhatIfIndexCreation")
+        logging.getLogger("dta").debug("Init WhatIfIndexCreation")
 
         self.simulated_indexes = {}
         self.db_connector = db_connector

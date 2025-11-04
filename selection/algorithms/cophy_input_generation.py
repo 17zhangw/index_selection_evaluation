@@ -37,7 +37,7 @@ class CoPhyInputGeneration(SelectionAlgorithm):
             )
 
     def full_enumeration(self, workload):
-        logging.info("Full enumeration of index combinations")
+        logging.getLogger("dta").info("Full enumeration of index combinations")
         # generate all indexes and combinations based on all accessed attributes
 
         accessed_columns_per_table = {}
@@ -71,7 +71,7 @@ class CoPhyInputGeneration(SelectionAlgorithm):
                     itertools.combinations(candidate_indexes, number_of_indexes_per_query)
                 )
             )
-            logging.info(
+            logging.getLogger("dta").info(
                 f"Evaluate {number_of_index_combinations} index combinations "
                 f"with {number_of_indexes_per_query} indexes per query:"
             )
@@ -81,7 +81,7 @@ class CoPhyInputGeneration(SelectionAlgorithm):
             ):
                 i += 1
                 if i % 10000 == 0:
-                    logging.info(f"  ... {i} / {number_of_index_combinations} done")
+                    logging.getLogger("dta").info(f"  ... {i} / {number_of_index_combinations} done")
                 is_useful_combination = False
                 costs_per_query = {}
                 for query in workload.queries:
@@ -96,12 +96,12 @@ class CoPhyInputGeneration(SelectionAlgorithm):
                     query_costs_for_index_combination[index_combination] = costs_per_query
                     for index in index_combination:
                         useful_indexes.add(index)
-            logging.info(f"  ... {i} / {number_of_index_combinations} done")
+            logging.getLogger("dta").info(f"  ... {i} / {number_of_index_combinations} done")
 
         return useful_indexes, query_costs_for_index_combination
 
     def query_based_enumeration(self, workload):
-        logging.info("Query-based enumeration of index combinations")
+        logging.getLogger("dta").info("Query-based enumeration of index combinations")
         # generate all indexes and combinations based on their appearance in queries
 
         index_combinations_for_workload = set()
@@ -138,12 +138,12 @@ class CoPhyInputGeneration(SelectionAlgorithm):
         useful_indexes: Set[Index] = set()
         query_costs_for_index_combination = {}
         number_of_index_combinations = len(index_combinations_for_workload)
-        logging.info(f"Evaluate {number_of_index_combinations} index combinations ")
+        logging.getLogger("dta").info(f"Evaluate {number_of_index_combinations} index combinations ")
         i = 0
         for index_combination in index_combinations_for_workload:
             i += 1
             if i % 10000 == 0:
-                logging.info(f"  ... {i} / {number_of_index_combinations} done")
+                logging.getLogger("dta").info(f"  ... {i} / {number_of_index_combinations} done")
             is_useful_combination = False
             costs_per_query = {}
             for query in workload.queries:
@@ -158,13 +158,13 @@ class CoPhyInputGeneration(SelectionAlgorithm):
                 query_costs_for_index_combination[index_combination] = costs_per_query
                 for index in index_combination:
                     useful_indexes.add(index)
-        logging.info(f"  ... {i} / {number_of_index_combinations} done")
+        logging.getLogger("dta").info(f"  ... {i} / {number_of_index_combinations} done")
 
         return useful_indexes, query_costs_for_index_combination
 
     def _calculate_best_indexes(self, workload: Workload) -> List:
-        logging.info("Creating input for CoPhy")
-        logging.info("Parameters: " + str(self.parameters))
+        logging.getLogger("dta").info("Creating input for CoPhy")
+        logging.getLogger("dta").info("Parameters: " + str(self.parameters))
 
         time_start = time.time()
 
@@ -183,7 +183,7 @@ class CoPhyInputGeneration(SelectionAlgorithm):
             assert False, f'Invalid enumeration type: {self.parameters["enumeration"]}'
 
         what_if_time = time.time() - time_start
-        logging.info(f"What-if time: {what_if_time} s")
+        logging.getLogger("dta").info(f"What-if time: {what_if_time} s")
         # construct data structures to output later
         cophy_dict = {
             "what_if_time": what_if_time,
@@ -256,7 +256,7 @@ class CoPhyInputGeneration(SelectionAlgorithm):
                 f'__per_query{self.parameters["max_indexes_per_query"]}'
             )
             if os.path.isfile(path_base + ".txt") and not self.parameters["overwrite"]:
-                logging.info(
+                logging.getLogger("dta").info(
                     f"A datafile already exists for at {path_base + '.txt'}. "
                     f"Set parameter overwrite to True if you want to overwrite."
                     f"Output to stdout"
@@ -264,7 +264,7 @@ class CoPhyInputGeneration(SelectionAlgorithm):
             else:
                 ampl_file_path = path_base + ".txt"
             if os.path.isfile(path_base + ".json") and not self.parameters["overwrite"]:
-                logging.info(
+                logging.getLogger("dta").info(
                     f"A jsonfile already exists for at {path_base + '.json'}. "
                     f"Set parameter overwrite to True if you want to overwrite."
                     f"Output to stdout"
@@ -283,7 +283,7 @@ def output_as_ampl(cophy_dict: Dict, file_path: str = None) -> None:
         folder = "/".join(file_path.split("/")[:-1])
         os.makedirs(folder, exist_ok=True)
         if os.path.isfile(file_path):
-            logging.info(f"Overwriting {file_path}")
+            logging.getLogger("dta").info(f"Overwriting {file_path}")
         handle = open(file_path, "w+")
     else:
         handle = sys.stdout
@@ -323,7 +323,7 @@ def output_as_ampl(cophy_dict: Dict, file_path: str = None) -> None:
             f'{query_costs["costs"]}\n'
         )
     handle.write(";\n")
-    logging.info(f"Wrote file to {file_path}")
+    logging.getLogger("dta").info(f"Wrote file to {file_path}")
 
     if handle is not sys.stdout:
         handle.close()
@@ -335,13 +335,13 @@ def output_as_json(cophy_dict: Dict, json_path: str = None) -> None:
         folder = "/".join(json_path.split("/")[:-1])
         os.makedirs(folder, exist_ok=True)
         if os.path.isfile(json_path):
-            logging.info(f"Overwriting {json_path}")
+            logging.getLogger("dta").info(f"Overwriting {json_path}")
         handle = open(json_path, "w+")
     else:
         handle = sys.stdout
 
     json.dump(cophy_dict, handle, indent=4)
-    logging.info(f"Wrote file to {json_path}")
+    logging.getLogger("dta").info(f"Wrote file to {json_path}")
 
     if handle is not sys.stdout:
         handle.close()

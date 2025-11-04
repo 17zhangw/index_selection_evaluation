@@ -6,10 +6,10 @@ from tqdm import tqdm
 
 class CostEvaluation:
     def __init__(self, db_connector, cost_estimation="whatif"):
-        logging.debug("Init cost evaluation")
+        logging.getLogger("dta").debug("Init cost evaluation")
         self.db_connector = db_connector
         self.cost_estimation = cost_estimation
-        logging.info("Cost estimation with " + self.cost_estimation)
+        logging.getLogger("dta").info("Cost estimation with " + self.cost_estimation)
         self.what_if = WhatIfIndexCreation(db_connector)
         self.current_indexes = set()
         self.cost_requests = 0
@@ -41,9 +41,9 @@ class CostEvaluation:
     def which_indexes_utilized_and_cost(self, query, indexes):
         self._prepare_cost_calculation(indexes, store_size=True)
 
-        logging.info(f"Fetching query plan for {query}")
+        logging.getLogger("dta").info(f"Fetching query plan for {query}")
         plan = self.db_connector.get_plan(query)
-        logging.info(f"Fetched query plan for {query}")
+        logging.getLogger("dta").info(f"Fetched query plan for {query}")
         cost = plan["Total Cost"]
         plan_str = str(plan)
 

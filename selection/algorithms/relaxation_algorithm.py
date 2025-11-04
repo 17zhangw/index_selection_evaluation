@@ -46,7 +46,7 @@ class RelaxationAlgorithm(SelectionAlgorithm):
         }
 
     def _calculate_best_indexes(self, workload):
-        logging.info("Calculating best indexes Relaxation")
+        logging.getLogger("dta").info("Calculating best indexes Relaxation")
 
         # Generate syntactically relevant candidates
         candidates = candidates_per_query(
@@ -63,7 +63,7 @@ class RelaxationAlgorithm(SelectionAlgorithm):
         cp_size = sum(index.estimated_size for index in cp)
         cp_cost = self.cost_evaluation.calculate_cost(workload, cp, store_size=True)
         while cp_size > self.disk_constraint:
-            logging.debug(
+            logging.getLogger("dta").debug(
                 f"Size of current configuration: {cp_size}. "
                 f"Budget: {self.disk_constraint}."
             )

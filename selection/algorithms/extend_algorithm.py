@@ -35,7 +35,7 @@ class ExtendAlgorithm(SelectionAlgorithm):
         self.min_cost_improvement = self.parameters["min_cost_improvement"]
 
     def _calculate_best_indexes(self, workload):
-        logging.info("Calculating best indexes Extend")
+        logging.getLogger("dta").info("Calculating best indexes Extend")
         self.workload = workload
         single_attribute_index_candidates = self.workload.potential_indexes()
         extension_attribute_candidates = single_attribute_index_candidates.copy()
@@ -73,7 +73,7 @@ class ExtendAlgorithm(SelectionAlgorithm):
             index_combination_size = sum(
                 index.estimated_size for index in index_combination
             )
-            logging.debug(
+            logging.getLogger("dta").debug(
                 "Add index. Current cost savings: "
                 f"{(1 - best['cost'] / current_cost) * 100:.3f}, "
                 f"initial {(1 - best['cost'] / self.initial_cost) * 100:.3f}. "
@@ -135,7 +135,7 @@ class ExtendAlgorithm(SelectionAlgorithm):
         total_size = sum(index.estimated_size for index in index_combination)
 
         if ratio > best["benefit_to_size_ratio"] and total_size <= self.budget:
-            logging.debug(
+            logging.getLogger("dta").debug(
                 f"new best cost and size: {cost}\t" f"{b_to_mb(total_size):.2f}MB"
             )
             best["combination"] = index_combination

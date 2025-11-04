@@ -20,7 +20,7 @@ class PostgresDatabaseConnector(DatabaseConnector):
 
         self.set_random_seed()
 
-        logging.debug("Postgres connector created: {}".format(db_name))
+        logging.getLogger("dta").debug("Postgres connector created: {}".format(db_name))
 
     def create_connection(self, conn_str=None):
         if self._connection:
@@ -77,7 +77,7 @@ class PostgresDatabaseConnector(DatabaseConnector):
 
     def create_database(self, database_name):
         self.exec_only("create database {}".format(database_name))
-        logging.info("Database {} created".format(database_name))
+        logging.getLogger("dta").info("Database {} created".format(database_name))
 
     def import_data(self, table, path, delimiter="|"):
         with open(path, "r") as file:
@@ -97,12 +97,12 @@ class PostgresDatabaseConnector(DatabaseConnector):
         statement = f"DROP DATABASE {database_name};"
         self.exec_only(statement)
 
-        logging.info(f"Database {database_name} dropped")
+        logging.getLogger("dta").info(f"Database {database_name} dropped")
 
     def create_statistics(self):
         return
 
-        logging.info("Postgres: Run `analyze`")
+        logging.getLogger("dta").info("Postgres: Run `analyze`")
         self.commit()
         self._connection.autocommit = True
         self.exec_only("analyze")
@@ -111,7 +111,7 @@ class PostgresDatabaseConnector(DatabaseConnector):
     def set_random_seed(self, value=0.17):
         return
 
-        logging.info(f"Postgres: Set random seed `SELECT setseed({value})`")
+        logging.getLogger("dta").info(f"Postgres: Set random seed `SELECT setseed({value})`")
         self.exec_only(f"SELECT setseed({value})")
 
     def supports_index_simulation(self):
@@ -151,13 +151,13 @@ class PostgresDatabaseConnector(DatabaseConnector):
     def drop_indexes(self):
         return
 
-        logging.info("Dropping indexes")
+        logging.getLogger("dta").info("Dropping indexes")
         stmt = "select indexname from pg_indexes where schemaname='public'"
         indexes = self.exec_fetch(stmt, one=False)
         for index in indexes:
             index_name = index[0]
             drop_stmt = "drop index {}".format(index_name)
-            logging.debug("Dropping index {}".format(index_name))
+            logging.getLogger("dta").debug("Dropping index {}".format(index_name))
             self.exec_only(drop_stmt)
 
     # PostgreSQL expects the timeout in milliseconds

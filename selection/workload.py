@@ -15,7 +15,7 @@ class Query:
             self.columns = columns
 
     def __repr__(self):
-        return f"Q{self.nr}"
+        return f"Q{self.nr}: {self.text}"
 
 
 class Workload:

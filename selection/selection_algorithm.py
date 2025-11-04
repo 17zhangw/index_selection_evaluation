@@ -15,7 +15,7 @@ class SelectionAlgorithm:
     def __init__(self, database_connector, parameters, default_parameters=None):
         if default_parameters is None:
             default_parameters = {}
-        logging.debug("Init selection algorithm")
+        logging.getLogger("dta").debug("Init selection algorithm")
         self.did_run = False
         self.parameters = parameters
         # Store default values for missing parameters
@@ -45,12 +45,12 @@ class SelectionAlgorithm:
     def _log_cache_hits(self):
         hits = self.cost_evaluation.cache_hits
         requests = self.cost_evaluation.cost_requests
-        logging.debug(f"Total cost cache hits:\t{hits}")
-        logging.debug(f"Total cost requests:\t\t{requests}")
+        logging.getLogger("dta").debug(f"Total cost cache hits:\t{hits}")
+        logging.getLogger("dta").debug(f"Total cost requests:\t\t{requests}")
         if requests == 0:
             return
         ratio = round(hits * 100 / requests, 2)
-        logging.debug(f"Cost cache hit ratio:\t{ratio}%")
+        logging.getLogger("dta").debug(f"Cost cache hit ratio:\t{ratio}%")
 
 
 class NoIndexAlgorithm(SelectionAlgorithm):

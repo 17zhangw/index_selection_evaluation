@@ -56,7 +56,7 @@ class Benchmark:
     def benchmark(self):
         self.db_connector.drop_indexes()
 
-        logging.info("Benchmark with config: {}".format(self.config))
+        logging.getLogger("dta").info("Benchmark with config: {}".format(self.config))
         # Number of runs can be set to 0 to get estimated workload
         # costs. Estimated sizes are returned instead of actual index sizes
         # to avoid creating the indexes.
@@ -149,10 +149,10 @@ class Benchmark:
             entry = header + "\n" + entry
         with open(self.filename, "a") as f:
             f.write(entry + "\n")
-        logging.info(f"Results written to {self.filename}")
+        logging.getLogger("dta").info(f"Results written to {self.filename}")
 
     def _benchmark(self):
-        logging.info("Benchmark all queries")
+        logging.getLogger("dta").info("Benchmark all queries")
         results = [{"Runtimes": [], "Hits": []} for x in self.workload.queries]
         plans = {x.nr: [] for x in self.workload.queries}
 
@@ -164,26 +164,26 @@ class Benchmark:
                 plans[query.nr].append(plan)
             results[query_id]["Cost"] = cost
         for i in range(self.number_of_runs):
-            logging.debug("Benchmark Run {}".format(i))
+            logging.getLogger("dta").debug("Benchmark Run {}".format(i))
             random_query_indexes = list(range(len(self.workload.queries)))
             seed = time.time()
             if self.seed:
                 seed = self.seed
-            logging.debug(f"Random seed: {seed}")
+            logging.getLogger("dta").debug(f"Random seed: {seed}")
             random.seed(seed)
             random.shuffle(random_query_indexes)
             for query_index in random_query_indexes:
                 query = self.workload.queries[query_index]
-                logging.debug("Run {}".format(query))
+                logging.getLogger("dta").debug("Run {}".format(query))
                 execution_time, plan = self._benchmark_query(query)
                 results[query_index]["Runtimes"].append(execution_time)
                 results[query_index]["Hits"].append(self._calculate_hits(plan))
                 plans[query.nr].append(plan)
-        logging.debug("Execution times: {}".format(results))
+        logging.getLogger("dta").debug("Execution times: {}".format(results))
         overall_costs = sum(
             [results[query_id]["Cost"] for query_id in range(len(self.workload.queries))]
         )
-        logging.debug(f"Overall Costs: {overall_costs}")
+        logging.getLogger("dta").debug(f"Overall Costs: {overall_costs}")
         self._store_results(results, plans)
 
     def _benchmark_query(self, query):
@@ -199,10 +199,10 @@ class Benchmark:
         return ratio
 
     def _create_indexes(self):
-        logging.info("Creating the indexes")
+        logging.getLogger("dta").info("Creating the indexes")
         start_time = time.time()
         for index in self.indexes:
-            logging.debug("create index on {}".format(index))
+            logging.getLogger("dta").debug("create index on {}".format(index))
             self.db_connector.create_index(index)
         self.index_create_time = round(time.time() - start_time, 2)
 

@@ -17,8 +17,8 @@ def syntactically_relevant_indexes(query, max_index_width):
     # "SAEFIS" or "BFI" see paper linked in DB2Advis algorithm
     # This implementation is "BFI" and uses all syntactically relevant indexes.
     columns = query.columns
-    logging.debug(f"{query}")
-    logging.debug(f"Indexable columns: {len(columns)}")
+    logging.getLogger("dta").debug(f"{query}")
+    logging.getLogger("dta").debug(f"Indexable columns: {len(columns)}")
 
     indexable_columns_per_table = {}
     for column in columns:
@@ -34,5 +34,5 @@ def syntactically_relevant_indexes(query, max_index_width):
                 itertools.permutations(columns, index_length)
             )
 
-    logging.debug(f"Potential indexes: {len(possible_column_combinations)}")
+    logging.getLogger("dta").debug(f"Potential indexes: {len(possible_column_combinations)}")
     return [Index(p) for p in possible_column_combinations]

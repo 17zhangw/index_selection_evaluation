@@ -29,7 +29,7 @@ class TableGenerator:
             self._generate()
             self.create_database()
         else:
-            logging.debug("Database with given scale factor already existing")
+            logging.getLogger("dta").debug("Database with given scale factor already existing")
         self._read_column_names()
 
     def database_name(self):
@@ -60,15 +60,15 @@ class TableGenerator:
                 self.columns.append(column_object)
 
     def _generate(self):
-        logging.info(f"Generating {self.benchmark_name} data")
-        logging.info(f"scale factor: {self.scale_factor}")
+        logging.getLogger("dta").info(f"Generating {self.benchmark_name} data")
+        logging.getLogger("dta").info(f"scale factor: {self.scale_factor}")
         self._run_make()
         self._run_command(self.cmd)
         if self.benchmark_name == "tpcds":
             self._run_command(["bash", "../../scripts/replace_in_dat.sh"])
-        logging.info("[Generate command] " + " ".join(self.cmd))
+        logging.getLogger("dta").info("[Generate command] " + " ".join(self.cmd))
         self._table_files()
-        logging.info(f"Files generated: {self.table_files}")
+        logging.getLogger("dta").info(f"Files generated: {self.table_files}")
 
     def create_database(self):
         self.db_connector.create_database(self.database_name())
@@ -84,31 +84,31 @@ class TableGenerator:
         self.db_connector.enable_simulation()
 
     def create_tables(self, create_statements):
-        logging.info("Creating tables")
+        logging.getLogger("dta").info("Creating tables")
         for create_statement in create_statements.split(";")[:-1]:
             self.db_connector.exec_only(create_statement)
         self.db_connector.commit()
 
     def _load_table_data(self, database_connector):
-        logging.info("Loading data into the tables")
+        logging.getLogger("dta").info("Loading data into the tables")
         for filename in self.table_files:
-            logging.debug(f"    Loading file {filename}")
+            logging.getLogger("dta").debug(f"    Loading file {filename}")
 
             table = filename.replace(".tbl", "").replace(".dat", "")
             path = self.directory + "/" + filename
             size = os.path.getsize(path)
             size_string = f"{b_to_mb(size):,.4f} MB"
-            logging.debug(f"    Import data of size {size_string}")
+            logging.getLogger("dta").debug(f"    Import data of size {size_string}")
             database_connector.import_data(table, path)
             os.remove(os.path.join(self.directory, filename))
         database_connector.commit()
 
     def _run_make(self):
         if "dbgen" not in self._files() and "dsdgen" not in self._files():
-            logging.info(f"Running make in {self.directory}")
+            logging.getLogger("dta").info(f"Running make in {self.directory}")
             self._run_command(self.make_command)
         else:
-            logging.info("No need to run make")
+            logging.getLogger("dta").info("No need to run make")
 
     def _table_files(self):
         self.table_files = [x for x in self._files() if ".tbl" in x or ".dat" in x]
@@ -123,7 +123,7 @@ class TableGenerator:
         )
         with p.stdout:
             for line in p.stdout:
-                logging.info(cmd_out + line.decode("utf-8").replace("\n", ""))
+                logging.getLogger("dta").info(cmd_out + line.decode("utf-8").replace("\n", ""))
         p.wait()
 
     def _files(self):

@@ -43,7 +43,7 @@ class DB2AdvisAlgorithm(SelectionAlgorithm):
         self.try_variations_max_removals = self.parameters["try_variations_max_removals"]
 
     def _calculate_best_indexes(self, workload):
-        logging.info("Calculating best indexes DB2Advis")
+        logging.getLogger("dta").info("Calculating best indexes DB2Advis")
 
         # The chosen generator is similar to the original "BFI" and
         # uses all syntactically relevant indexes.
@@ -122,7 +122,7 @@ class DB2AdvisAlgorithm(SelectionAlgorithm):
         return sorted(result_set, reverse=True)
 
     def _try_variations(self, selected_index_benefits, index_benefits, workload):
-        logging.debug(f"Try variation for {self.try_variations_seconds} seconds")
+        logging.getLogger("dta").debug(f"Try variation for {self.try_variations_seconds} seconds")
         start_time = time.time()
 
         not_used_index_benefits = set(index_benefits) - set(selected_index_benefits)
@@ -135,7 +135,7 @@ class DB2AdvisAlgorithm(SelectionAlgorithm):
             return selected_index_benefits
 
         current_cost = self._evaluate_workload(selected_index_benefits, workload)
-        logging.debug(f"Initial cost \t{current_cost}")
+        logging.getLogger("dta").debug(f"Initial cost \t{current_cost}")
         selected_index_benefits_set = set(selected_index_benefits)
 
         while start_time + self.try_variations_seconds > time.time():
@@ -168,7 +168,7 @@ class DB2AdvisAlgorithm(SelectionAlgorithm):
             cost_of_variation = self._evaluate_workload(new_variaton, workload)
 
             if cost_of_variation < current_cost:
-                logging.debug(f"Lower cost found \t{current_cost}")
+                logging.getLogger("dta").debug(f"Lower cost found \t{current_cost}")
                 current_cost = cost_of_variation
                 selected_index_benefits_set = new_variaton
 

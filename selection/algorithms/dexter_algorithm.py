@@ -53,7 +53,7 @@ class DexterAlgorithm(SelectionAlgorithm):
             self.database_connector.commit()
 
             log_output = output_string.replace("\n", "")
-            logging.debug(f"{query}: {log_output}")
+            logging.getLogger("dta").debug(f"{query}: {log_output}")
 
             if "public." in output_string:
                 index = output_string.split("public.")[1].split(" (")

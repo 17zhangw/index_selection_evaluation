@@ -43,7 +43,7 @@ class AnytimeAlgorithm(SelectionAlgorithm):
         self.bests = []
 
     def _calculate_best_indexes(self, workload):
-        logging.info("Calculating best indexes Anytime")
+        logging.getLogger("dta").info("Calculating best indexes Anytime")
 
         # Generate syntactically relevant candidates
         candidates = candidates_per_query(
@@ -79,7 +79,7 @@ class AnytimeAlgorithm(SelectionAlgorithm):
         start_time = time.time()
         best_configuration = (None, None)
         for i, seed in enumerate(seeds):
-            logging.info(f"Seed {i + 1} from {len(seeds)}")
+            logging.getLogger("dta").info(f"Seed {i + 1} from {len(seeds)}")
             candidates_copy = candidates.copy()
             candidates_copy -= seed
             current_costs = self._simulate_and_evaluate_cost(workload, seed)
@@ -92,19 +92,19 @@ class AnytimeAlgorithm(SelectionAlgorithm):
                     f"CREATE INDEX {idx.index_idx()} ON {idx.table()} ({idx.joined_column_names()})"
                     for idx in indexes
                 ])
-                logging.info(
+                logging.getLogger("dta").info(
                     f"AnytimeDTA found new best: {list(indexes)}"
                 )
 
             current_time = time.time()
             consumed_time = current_time - start_time
             if consumed_time > self.max_runtime_minutes * 60:
-                logging.info(
+                logging.getLogger("dta").info(
                     f"Stopping after {i + 1} seeds because of timing constraints."
                 )
                 break
             else:
-                logging.debug(
+                logging.getLogger("dta").debug(
                     f"Current best: {best_configuration[1]} after {consumed_time}s."
                 )
 
@@ -141,7 +141,7 @@ class AnytimeAlgorithm(SelectionAlgorithm):
         # (index, cost)
         best_index = (None, None)
 
-        logging.debug(f"Searching in {len(candidate_indexes)} indexes")
+        logging.getLogger("dta").debug(f"Searching in {len(candidate_indexes)} indexes")
 
         for index in candidate_indexes:
             if (
@@ -159,7 +159,7 @@ class AnytimeAlgorithm(SelectionAlgorithm):
             candidate_indexes.remove(best_index[0])
             current_costs = best_index[1]
 
-            logging.debug(f"Additional best index found: {best_index}")
+            logging.getLogger("dta").debug(f"Additional best index found: {best_index}")
 
             return self.enumerate_greedy(
                 workload,

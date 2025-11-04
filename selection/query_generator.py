@@ -24,7 +24,7 @@ class QueryGenerator:
 
     def add_new_query(self, query_id, query_text):
         if not self.db_connector:
-            logging.info("{}:".format(self))
+            logging.getLogger("dta").info("{}:".format(self))
             logging.error("No database connector to validate queries")
             raise Exception("database connector missing")
         query_text = self.db_connector.update_query_text(query_text)
@@ -46,7 +46,7 @@ class QueryGenerator:
                 query.columns.append(column)
 
     def _generate_tpch(self):
-        logging.info("Generating TPC-H Queries")
+        logging.getLogger("dta").info("Generating TPC-H Queries")
         self._run_make()
         # Using default parameters (`-d`)
         queries_string = self._run_command(
@@ -61,10 +61,10 @@ class QueryGenerator:
                     continue
                 text = text.replace("\t", "")
                 self.add_new_query(query_id, text)
-        logging.info("Queries generated")
+        logging.getLogger("dta").info("Queries generated")
 
     def _generate_tpcds(self):
-        logging.info("Generating TPC-DS Queries")
+        logging.getLogger("dta").info("Generating TPC-DS Queries")
         self._run_make()
         # dialects: ansi, db2, netezza, oracle, sqlserver
         command = [
@@ -110,10 +110,10 @@ class QueryGenerator:
 
     def _run_make(self):
         if "qgen" not in self._files() and "dsqgen" not in self._files():
-            logging.info(f"Running {self.make_command} in {self.directory}")
+            logging.getLogger("dta").info(f"Running {self.make_command} in {self.directory}")
             self._run_command(self.make_command)
         else:
-            logging.debug("No need to run make")
+            logging.getLogger("dta").debug("No need to run make")
 
     def _run_command(self, command, return_output=False, shell=False):
         env = os.environ.copy()
@@ -132,7 +132,7 @@ class QueryGenerator:
         if return_output:
             return output_string
         else:
-            logging.debug("[SUBPROCESS OUTPUT] " + output_string)
+            logging.getLogger("dta").debug("[SUBPROCESS OUTPUT] " + output_string)
 
     def _files(self):
         return os.listdir(self.directory)

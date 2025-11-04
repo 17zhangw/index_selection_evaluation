@@ -39,7 +39,7 @@ DBMSYSTEMS = {"postgres": PostgresDatabaseConnector}
 
 class IndexSelection:
     def __init__(self):
-        logging.debug("Init IndexSelection")
+        logging.getLogger("dta").debug("Init IndexSelection")
         self.db_connector = None
         self.default_config_file = "example_configs/config_tpch.json"
         self.disable_output_files = False
@@ -53,8 +53,8 @@ class IndexSelection:
         if not config_file:
             config_file = self.default_config_file
 
-        logging.info("Starting Index Selection Evaluation")
-        logging.info("Using config file {}".format(config_file))
+        logging.getLogger("dta").info("Starting Index Selection Evaluation")
+        logging.getLogger("dta").info("Using config file {}".format(config_file))
 
         self._run_algorithms(config_file)
 
@@ -112,7 +112,7 @@ class IndexSelection:
 
         for algorithm_config in config["algorithms"]:
             if algorithm_config["name"] == "cophy_input":
-                logging.info("CoPhy input is generated; but results are not calculated.")
+                logging.getLogger("dta").info("CoPhy input is generated; but results are not calculated.")
 
             # There are multiple configs if there is a parameter list
             # configured (as a list in the .json file)
@@ -175,9 +175,9 @@ class IndexSelection:
         self.setup_db_connector(self.port, self.database_name, self.database_system)
 
         algorithm = self.create_algorithm_object(config["name"], config["parameters"])
-        logging.info(f"Running algorithm {config}")
+        logging.getLogger("dta").info(f"Running algorithm {config}")
         indexes = algorithm.calculate_best_indexes(self.workload)
-        logging.info(f"Indexes found: {indexes}")
+        logging.getLogger("dta").info(f"Indexes found: {indexes}")
         what_if = algorithm.cost_evaluation.what_if
 
         cost_requests = (
@@ -210,6 +210,6 @@ class IndexSelection:
 
     def setup_db_connector(self, port, database_name, database_system):
         if self.db_connector:
-            logging.info("Create new database connector (closing old)")
+            logging.getLogger("dta").info("Create new database connector (closing old)")
             self.db_connector.close()
         self.db_connector = DBMSYSTEMS[database_system](port, database_name)
